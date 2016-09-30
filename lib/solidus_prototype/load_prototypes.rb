@@ -5,22 +5,24 @@
 # it is included in.
 module Spree
   module Prototypes
+    module ProductControllerDecorator
 
-    def self.included(base)
-      base.extend(ClassMethods)
-      base.__send__(:create).before :load_prototype
-    end
+      def self.included(base)
+        base.extend(ClassMethods)
+        base.__send__(:create).before :load_prototype
+      end
 
-    module ClassMethods
-      protected
+      module ClassMethods
+        protected
 
-      def load_prototype
-        resource = name.underscore.split("_").first.split("/").last.singularize.to_sym
-        return if params[resource][:prototype_id].blank?
-        @prototype = Spree::Prototype.find(params[resource][:prototype_id])
+        def load_prototype
+          resource = name.underscore.split("_").first.split("/").last.singularize.to_sym
+          return if params[resource][:prototype_id].blank?
+          @prototype = Spree::Prototype.find(params[resource][:prototype_id])
+        end
       end
     end
-
-    Spree::Admin::ProductsController.include(Spree::Prototypes)
   end
 end
+
+Spree::Admin::ProductsController.include Spree::Prototypes::ProductControllerDecorator
